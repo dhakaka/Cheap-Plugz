@@ -1,0 +1,130 @@
+/* countdown.css */
+.countdown-banner {
+    width: 100%;
+    background-color: #000;
+    /* Black background as requested */
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 24px;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    /* Changed from sticky to relative. If they modify nav, it can be pushed */
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.countdown-banner.hidden {
+    display: none !important;
+}
+
+.countdown-content {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.countdown-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+}
+
+.countdown-timer {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.time-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 50px;
+}
+
+.time-value {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+}
+
+.time-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 6px;
+    font-weight: 700;
+    color: #e0e0e0;
+}
+
+.time-colon {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0 4px;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+}
+
+.countdown-btn-wrapper {
+    margin-left: auto;
+    /* Push to right if space permits */
+}
+
+.countdown-btn {
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 800;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 4px 0px #cccccc;
+}
+
+.countdown-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.countdown-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0px 0px #cccccc;
+}
+
+@media (max-width: 900px) {
+    .countdown-content {
+        gap: 20px;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .countdown-btn-wrapper {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .countdown-title {
+        font-size: 1.2rem;
+    }
+
+    .time-value {
+        font-size: 1.6rem;
+    }
+
+    .countdown-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Notified - Cheap Plugz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="countdown.css">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .auth-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            margin-top: 80px;
+        }
+
+        .auth-box {
+            background-color: #111;
+            padding: 40px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navigation (Simplified for auth) -->
+    <header class="header">
+        <div class="nav-container container">
+            <a href="index.html" class="logo">
+                <img src="assets/logo.png" alt="Cheap Plugz Logo" class="logo-img">
+            </a>
+            <div class="nav-icons">
+                <a href="index.html"><i data-feather="home"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-container">
+        <div class="auth-box">
+            <i data-feather="check-circle" style="width: 64px; height: 64px; color: #00ff00; margin-bottom: 24px;"></i>
+            <h1 id="notified-title" style="margin-bottom: 16px; line-height: 1.4; font-size:1.8rem;">You Will now be
+                Notified When the Event Happens !</h1>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
+                if you believe this was a mistake, <a href="contact.html"
+                    style="color: #666; text-decoration: underline;">Contact support</a>
+            </p>
+            <button onclick="window.location.href='index.html'" class="btn-primary"
+                style="margin-top: 32px; width: 100%;">Return to Store</button>
+        </div>
+    </main>
+
+    <script src="countdown.js"></script>
+    <script>
+        feather.replace();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const configStr = localStorage.getItem('tonka_countdown_config');
+            if (configStr) {
+                const config = JSON.parse(configStr);
+                if (config.title) {
+                    document.getElementById('notified-title').innerText = `You Will now be Notified When ${config.title} Happens !`;
+                }
+            }
+
+            // Persist the user's opted-in email
+            const activeEmail = localStorage.getItem('current_customer_email');
+            if (activeEmail) {
+                const notiList = JSON.parse(localStorage.getItem('tonka_notified_emails') || '[]');
+                if (!notiList.includes(activeEmail)) {
+                    notiList.push(activeEmail);
+                    localStorage.setItem('tonka_notified_emails', JSON.stringify(notiList));
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
