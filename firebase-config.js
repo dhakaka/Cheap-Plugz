@@ -20,7 +20,10 @@ window.getFirebaseProducts = function () {
     return new Promise((resolve, reject) => {
         db.ref('products').once('value')
             .then((snapshot) => {
-                const data = snapshot.val();
+                let data = snapshot.val();
+                if (data && !Array.isArray(data)) {
+                    data = Object.values(data);
+                }
                 resolve(data ? data : []);
             })
             .catch(error => {
@@ -43,7 +46,10 @@ window.saveFirebaseProducts = function (products) {
 // Automatically listen for updates in real-time
 window.onProductsUpdate = function (callback) {
     db.ref('products').on('value', (snapshot) => {
-        const data = snapshot.val();
+        let data = snapshot.val();
+        if (data && !Array.isArray(data)) {
+            data = Object.values(data);
+        }
         callback(data ? data : []);
     });
 };
