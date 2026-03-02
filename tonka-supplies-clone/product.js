@@ -1,14 +1,13 @@
-function getProductById(id) {
-    const savedProducts = localStorage.getItem('tonka_products');
-    if (!savedProducts) return null;
-    const products = JSON.parse(savedProducts);
-    return products.find(p => p.id == id);
+async function getProductById(id) {
+    const products = await window.getFirebaseProducts();
+    if (!products || products.length === 0) return null;
+    return products.find(p => String(p.id) === String(id));
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
-    const product = getProductById(productId);
+    const product = await getProductById(productId);
 
     const mainContent = document.getElementById('product-page-content');
 

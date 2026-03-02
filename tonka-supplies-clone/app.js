@@ -65,18 +65,17 @@ const defaultProducts = [
     }
 ];
 
-// Initialize local storage if empty
-function initializeProducts() {
-    let savedProducts = localStorage.getItem('tonka_products');
-    if (!savedProducts) {
-        localStorage.setItem('tonka_products', JSON.stringify(defaultProducts));
+// Initialize Firebase if empty
+async function initializeProducts() {
+    const products = await window.getFirebaseProducts();
+    if (!products || products.length === 0) {
+        await window.saveFirebaseProducts(defaultProducts);
     }
 }
 
 // Get current products
-function getProducts() {
-    const savedProducts = localStorage.getItem('tonka_products');
-    return savedProducts ? JSON.parse(savedProducts) : [];
+async function getProducts() {
+    return await window.getFirebaseProducts();
 }
 
 function renderProducts(products) {
@@ -139,7 +138,7 @@ function renderProducts(products) {
 }
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Handle Loading Screen
     const loader = document.getElementById('page-loader');
     const progressBar = document.getElementById('loader-progress');
@@ -161,9 +160,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 80);
     }
 
-    initializeProducts();
-    const products = getProducts();
+    await initializeProducts();
+    const products = await getProducts();
     renderProducts(products);
+
+    // Listen to real-time sync from admin changes
+    if (window.onProductsUpdate) {
+        window.onProductsUpdate((newProducts) => {
+            if (newProducts && newProducts.length > 0) {
+                renderProducts(newProducts);
+            }
+        });
+    }
+
     initReviewPopups();
 });
 

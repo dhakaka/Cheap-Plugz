@@ -24,14 +24,13 @@
     localStorage.setItem('tonka_order_migrated_1001', 'true');
 })();
 
-// Initialize local storage logic from app.js equivalent
-function getProducts() {
-    const savedProducts = localStorage.getItem('tonka_products');
-    return savedProducts ? JSON.parse(savedProducts) : [];
+// Initialize Firebase logic from app.js equivalent
+async function getProducts() {
+    return await window.getFirebaseProducts();
 }
 
-function saveProducts(products) {
-    localStorage.setItem('tonka_products', JSON.stringify(products));
+async function saveProducts(products) {
+    await window.saveFirebaseProducts(products);
 }
 
 // DOM Elements
@@ -192,8 +191,8 @@ imageInput.addEventListener('change', (e) => {
 });
 
 // Render the Table
-function renderTable() {
-    const products = getProducts();
+async function renderTable() {
+    const products = await getProducts();
     inventoryList.innerHTML = '';
 
     if (products.length === 0) {
@@ -246,10 +245,10 @@ function renderTable() {
 
 
 // Handle Form Submission (Add or Update)
-form.addEventListener('submit', (e) => {
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    let products = getProducts();
+    let products = await getProducts();
     const editingId = idInput.value;
 
     // Gather variants
@@ -293,14 +292,14 @@ form.addEventListener('submit', (e) => {
         products.push(newProductData);
     }
 
-    saveProducts(products);
+    await saveProducts(products);
     resetForm();
-    renderTable();
+    await renderTable();
 });
 
 // Edit Product
-window.editProduct = function (id) {
-    const products = getProducts();
+window.editProduct = async function (id) {
+    const products = await getProducts();
     const product = products.find(p => p.id == id);
     if (!product) return;
 
@@ -338,12 +337,12 @@ window.editProduct = function (id) {
 };
 
 // Delete Product
-window.deleteProduct = function (id) {
+window.deleteProduct = async function (id) {
     if (confirm("Are you sure you want to delete this product? This cannot be undone.")) {
-        let products = getProducts();
+        let products = await getProducts();
         products = products.filter(p => p.id != id);
-        saveProducts(products);
-        renderTable();
+        await saveProducts(products);
+        await renderTable();
 
         // If we were editing the deleted product, reset the form
         if (idInput.value == id) {
@@ -491,14 +490,14 @@ navItems.forEach(item => {
 });
 
 // --- Mock Orders Logic ---
-function renderOrders() {
+async function renderOrders() {
     const ordersList = document.getElementById('orders-list');
     const productSelect = document.getElementById('manual-product-select');
     if (!ordersList) return;
 
     // Populate manual orders product dropdown
     if (productSelect) {
-        let products = getProducts();
+        let products = await getProducts();
         if (products.length === 0) {
             productSelect.innerHTML = `<option value="">No products available</option>`;
         } else {
@@ -662,7 +661,7 @@ window.closeOrderDetails = function () {
 // --- Manual Order Submission ---
 const manualOrderForm = document.getElementById('manual-order-form');
 if (manualOrderForm) {
-    manualOrderForm.addEventListener('submit', (e) => {
+    manualOrderForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const email = document.getElementById('manual-customer-email').value.trim();
@@ -676,7 +675,7 @@ if (manualOrderForm) {
             return;
         }
 
-        const product = getProducts().find(p => p.id == productId);
+        const product = (await getProducts()).find(p => p.id == productId);
         if (!product) return;
 
         const effectivePrice = priceOverride ? parseFloat(priceOverride) : (product.salePrice > 0 ? product.salePrice : product.originalPrice);
@@ -1055,7 +1054,7 @@ window.updateReviewStatus = function (index, newStatus) {
 // --- AI Prompts Logic ---
 window.editingAiIndex = null;
 
-function renderAiPrompts() {
+async function renderAiPrompts() {
     const list = document.getElementById('ai-prompts-list');
     if (!list) return;
 
@@ -1067,7 +1066,7 @@ function renderAiPrompts() {
         return;
     }
 
-    const products = JSON.parse(localStorage.getItem('tonka_products') || '[]');
+    const products = await getProducts();
 
     prompts.forEach((p, index) => {
         let productLabel = "";
@@ -1164,8 +1163,8 @@ window.editAiPrompt = function (index) {
     document.getElementById('ai-prompt-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
 };
 
-function renderAiProductOptions() {
-    let products = JSON.parse(localStorage.getItem('tonka_products') || '[]');
+async function renderAiProductOptions() {
+    let products = await getProducts();
     let html = `<option value="">-- No Product Attached --</option>`;
 
     products.forEach(p => {
@@ -1180,12 +1179,12 @@ function renderAiProductOptions() {
     if (blastSelect) blastSelect.innerHTML = html;
 }
 
-window.deleteAiPrompt = function (index) {
+window.deleteAiPrompt = async function (index) {
     if (confirm('Are you sure you want to delete this custom AI response?')) {
         let prompts = JSON.parse(localStorage.getItem('tonka_ai_prompts') || '[]');
         prompts.splice(index, 1);
         localStorage.setItem('tonka_ai_prompts', JSON.stringify(prompts));
-        renderAiPrompts();
+        await renderAiPrompts();
     }
 };
 
@@ -1322,7 +1321,7 @@ window.toggleAllBlastCheckboxes = function (masterCb) {
     cbs.forEach(cb => cb.checked = masterCb.checked);
 };
 
-window.sendMassEmail = function (event) {
+window.sendMassEmail = async function (event) {
     event.preventDefault();
     if (typeof emailjs === 'undefined') {
         alert("EmailJS is not configured or loaded. Cannot send mass emails.");
@@ -1386,7 +1385,7 @@ window.sendMassEmail = function (event) {
         }
 
         if (productId) {
-            const products = JSON.parse(localStorage.getItem('tonka_products') || '[]');
+            const products = await getProducts();
             const prod = products.find(p => String(p.id) === String(productId));
             if (prod) {
                 let dispPrice = prod.salePrice || prod.originalPrice || 0;

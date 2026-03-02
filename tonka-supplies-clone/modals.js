@@ -63,9 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeSearchBtn) closeSearchBtn.addEventListener('click', () => searchModal.classList.remove('active'));
 
     if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
+        searchInput.addEventListener('input', async (e) => {
             const query = e.target.value.toLowerCase();
-            const products = getProducts();
+            const products = await window.getFirebaseProducts();
             const filtered = products.filter(p => p.title.toLowerCase().includes(query));
 
             searchResults.innerHTML = '';

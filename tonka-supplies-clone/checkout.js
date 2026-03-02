@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // 1. Enforce Login State
     const activeUserRaw = localStorage.getItem('tonka_active_user');
     if (!activeUserRaw) {
@@ -54,8 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const quantity = qtyRaw ? parseInt(qtyRaw, 10) : 1;
 
     // 3. Load Product Data
-    const productsRaw = localStorage.getItem('tonka_products');
-    const products = productsRaw ? JSON.parse(productsRaw) : [];
+    const products = await window.getFirebaseProducts();
     const product = products.find(p => String(p.id) === String(productId));
 
     if (!product) {

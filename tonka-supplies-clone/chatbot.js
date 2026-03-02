@@ -127,7 +127,7 @@
             appendMessage('user', text);
             inputEl.value = '';
 
-            setTimeout(() => {
+            setTimeout(async () => {
                 if (chatState === 'WAITING_FOR_ORDER') {
                     // Extract numbers from input just in case they say "Order #1234"
                     const orderIdStr = text.replace(/[^0-9]/g, '');
@@ -158,7 +158,7 @@
                         let finalHtml = matchedPrompt.response;
 
                         if (matchedPrompt.productId) {
-                            let products = JSON.parse(localStorage.getItem('tonka_products') || '[]');
+                            let products = await window.getFirebaseProducts();
                             let prod = products.find(pr => String(pr.id) === String(matchedPrompt.productId));
                             if (prod) {
                                 let dispPrice = prod.salePrice || prod.originalPrice || 0;
