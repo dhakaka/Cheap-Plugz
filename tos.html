@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Cheap Plugz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .legal-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 16px;
+            text-align: center;
+        }
+
+        .legal-page img.logo-spin {
+            height: 100px;
+            margin-bottom: 40px;
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .legal-content {
+            text-align: left;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .legal-content h1 {
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            text-align: center;
+            font-size: 2rem;
+            text-transform: uppercase;
+        }
+
+        .legal-content h2 {
+            color: var(--text-primary);
+            margin-top: 32px;
+            margin-bottom: 16px;
+        }
+
+        .legal-content p {
+            margin-bottom: 16px;
+        }
+    </style>
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <a href="/" class="logo">
+                <img src="assets/logo.png" alt="Cheap Plugz Logo" class="logo-img">
+            </a>
+            <a href="/" class="btn-secondary" style="color:#fff; text-decoration:none;">Back to Store</a>
+        </div>
+    </header>
+
+    <main class="legal-page">
+        <img src="assets/logo.png" alt="Cheap Plugz Logo" class="logo-spin">
+        <div class="legal-content">
+            <h1>Terms of Service</h1>
+            <p>By purchasing from Cheap Plugz (“we,” “us,” or “our”), you agree to the following Terms of Service.
+                Please read them carefully before making a purchase.</p>
+
+            <h2>1. Product Disclaimer</h2>
+            <p>Cheap Plugz offers inspired products that are independently created and are not affiliated with,
+                endorsed by, or sponsored by any original brands or trademark holders.</p>
+            <p>All items are intended for personal use only. Buyers are solely responsible for understanding the nature
+                and intended use of the items they purchase.</p>
+
+            <h2>2. Shipping & Fulfillment</h2>
+            <p>Orders are processed and shipped based on the information provided at checkout.</p>
+            <p>Once an item has shipped, we are not responsible for any delays, damages, or losses that occur during
+                transit.</p>
+
+            <h2>3. Post-Delivery Liability</h2>
+            <p>Cheap Plugz assumes no responsibility for any issues, damages, injuries, or claims that arise after
+                the package has been delivered and opened.</p>
+            <p>Use of the product is entirely at the buyer’s discretion and risk. We are not responsible for packages
+                marked as delivered that are lost, stolen, or misdelivered, including theft or access by third parties.
+                Customers are responsible for contacting the carrier to initiate any delivery investigation once
+                delivery is confirmed.</p>
+
+            <h2>4. Returns & Refunds</h2>
+            <p>All sales are final due to the nature of our products and supply chain.</p>
+            <p>We do not accept returns, refunds, or exchanges unless an incorrect item was shipped.</p>
+
+            <h2>5. Payment Terms</h2>
+            <p>Buyers agree to provide accurate and valid payment information at the time of purchase.</p>
+            <p>All transactions are securely processed through our checkout system.</p>
+            <p>Any chargebacks or fraudulent claims will result in a permanent ban from future purchases and may be
+                subject to legal action.</p>
+
+            <h2>6. Eligibility & Order Rights</h2>
+            <p>By placing an order, you confirm that you are at least 18 years old or have legal authorization to make
+                the purchase.</p>
+            <p>We reserve the right to cancel or refuse any order at our sole discretion.</p>
+
+            <h2>7. Disclaimer</h2>
+            <p><strong>INTENDED USE AND COPYRIGHT DISCLAIMER OF AFFILIATION AND INTENDED USE</strong></p>
+            <p>OUR PRODUCTS ARE INDEPENDENTLY MANUFACTURED AND ARE NOT AFFILIATED, ENDORSED, OR SPONSORED BY ANY BRANDED
+                COMPANY. ANY SIMILARITIES TO OTHER BRANDED ELECTRONIC ACCESSORIES AND OR PRODUCTS LISTED ARE FOR
+                FUNCTIONAL AND ILLUSTRATIVE PURPOSES ONLY.</p>
+            <p>OUR PRODUCTS ARE SOLD STRICTLY FOR PERSONAL, NON-COMMERCIAL, AND EDUCATIONAL USE. ANY RESALE OR
+                REDISTRIBUTION OF OUR PRODUCTS THAT IMPLIES AFFILIATION WITH, ENDORSEMENT BY, OR CERTIFICATION FROM ANY
+                BRANDED ELECTRONIC COMPANIES IS STRICTLY PROHIBITED. ANY MISUSE, MODIFICATION, OR UNAUTHORIZED RESALE OF
+                OUR PRODUCTS BY PURCHASERS IS SOLELY THE RESPONSIBILITY OF THE PURCHASER, AND WE DISCLAIM ANY AND ALL
+                LIABILITY ARISING FROM SUCH ACTIONS.</p>
+            <p>BY PURCHASING FROM OUR COMPANY, YOU AGREE TO USE OUR PRODUCTS SOLELY FOR THE INTENDED PURPOSE AS
+                DESCRIBED ABOVE AND TO INDEMNIFY AND HOLD US HARMLESS FROM ANY CLAIMS, DAMAGES, OR LIABILITIES ARISING
+                FROM ANY USE OUTSIDE THE INTENDED PURPOSE.</p>
+
+            <p><strong>COMPARATIVE ADVERTISING DISCLAIMER</strong></p>
+            <p>PLEASE BE AWARE THAT PRODUCTS MENTIONED THROUGHOUT OUR SITE ARE A MERE GUIDE AND IN NO CIRCUMSTANCE
+                SHOULD BE MISTAKEN FOR THE ACTUAL HIGH STREET, DESIGNER OR NICHE BRANDS. NAMES AND COPYRIGHTS, USED OR
+                UNUSED, ARE PROPERTIES OF THEIR RESPECTIVE MANUFACTURERS AND/OR DESIGNERS.</p>
+            <p>ALL ‘TRADEMARKS’, USED OR UNUSED, ARE PROPERTY OF THEIR RESPECTIVE OWNERS. WE ARE NOT ENDORSED BY,
+                DIRECTLY AFFILIATED WITH, MAINTAINED, AUTHORISED, OR SPONSORED BY ANY TRADEMARK HOLDER REFERENCED OR
+                UNREFERENCED HEREIN.</p>
+            <p>THE USE OF ANY PRODUCT NAME IS FOR IDENTIFICATION AND REFERENCE PURPOSES ONLY, AND DOES NOT IMPLY ANY
+                ASSOCIATION WITH THE TRADEMARK HOLDER.</p>
+            <p>ALL TRADEMARKS ARE THE PROPERTY OF THEIR RESPECTIVE OWNERS. WE COMPLY WITH THE FEDERAL TRADE COMMISSION’S
+                STATEMENT OF POLICY REGARDING COMPARATIVE ADVERTISING.</p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container container">
+            <div class="footer-bottom">
+                <div class="legal-links">
+                    <a href="refund.html">Refund policy</a>
+                    <a href="privacy.html">Privacy policy</a>
+                    <a href="tos.html">Terms of service</a>
+                    <a href="contact.html">Contact information</a>
+                </div>
+                <p class="copyright">@ CHEAP PLUGZ ALL RIGHTS RESERVED</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

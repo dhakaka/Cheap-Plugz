@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Cheap Plugz</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="checkout.css">
+    <!-- Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+
+<body>
+    <div class="checkout-container">
+        <!-- Left Side: Delivery Info -->
+        <main class="checkout-main">
+            <header class="checkout-header">
+                <a href="index.html" class="logo"><img src="assets/logo.png" alt="Cheap Plugz Logo"
+                        style="max-height: 80px; width: auto;"></a>
+                <nav class="breadcrumb">
+                    <a href="cart.html">Cart</a>
+                    <i data-feather="chevron-right"></i>
+                    <span>Information</span>
+                    <i data-feather="chevron-right"></i>
+                    <span>Shipping</span>
+                    <i data-feather="chevron-right"></i>
+                    <span>Payment</span>
+                </nav>
+            </header>
+
+            <section class="checkout-section">
+                <div class="section-header">
+                    <h2>Contact</h2>
+                    <span id="user-email-display" class="auth-link">Loading...</span>
+                </div>
+
+                <div class="delivery-container">
+                    <h2 style="margin-top:32px; margin-bottom:16px;">Delivery</h2>
+
+                    <form id="checkout-form">
+                        <div class="form-group">
+                            <select id="country" required class="form-input">
+                                <option value="United States">United States</option>
+                            </select>
+                            <label class="floating-label"
+                                style="top: -10px; background: white; padding: 0 4px; border-radius: 4px;">Country/Region</label>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <input type="text" id="firstName" required class="form-input" placeholder="First name">
+                            </div>
+                            <div class="form-group half">
+                                <input type="text" id="lastName" required class="form-input" placeholder="Last name">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" id="address" required class="form-input" placeholder="Address">
+                            <i data-feather="search" class="input-icon"></i>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" id="apartment" class="form-input"
+                                placeholder="Apartment, suite, etc. (optional)">
+                        </div>
+
+                        <div class="form-row three-col">
+                            <div class="form-group">
+                                <input type="text" id="city" required class="form-input" placeholder="City">
+                            </div>
+                            <div class="form-group">
+                                <select id="state" required class="form-input">
+                                    <option value="" disabled selected>State</option>
+                                    <option value="AL">Alabama</option>
+                                    <option value="AK">Alaska</option>
+                                    <option value="AZ">Arizona</option>
+                                    <option value="AR">Arkansas</option>
+                                    <option value="CA">California</option>
+                                    <option value="CO">Colorado</option>
+                                    <option value="CT">Connecticut</option>
+                                    <option value="DE">Delaware</option>
+                                    <option value="FL">Florida</option>
+                                    <option value="GA">Georgia</option>
+                                    <option value="HI">Hawaii</option>
+                                    <option value="ID">Idaho</option>
+                                    <option value="IL">Illinois</option>
+                                    <option value="IN">Indiana</option>
+                                    <option value="IA">Iowa</option>
+                                    <option value="KS">Kansas</option>
+                                    <option value="KY">Kentucky</option>
+                                    <option value="LA">Louisiana</option>
+                                    <option value="ME">Maine</option>
+                                    <option value="MD">Maryland</option>
+                                    <option value="MA">Massachusetts</option>
+                                    <option value="MI">Michigan</option>
+                                    <option value="MN">Minnesota</option>
+                                    <option value="MS">Mississippi</option>
+                                    <option value="MO">Missouri</option>
+                                    <option value="MT">Montana</option>
+                                    <option value="NE">Nebraska</option>
+                                    <option value="NV">Nevada</option>
+                                    <option value="NH">New Hampshire</option>
+                                    <option value="NJ">New Jersey</option>
+                                    <option value="NM">New Mexico</option>
+                                    <option value="NY">New York</option>
+                                    <option value="NC">North Carolina</option>
+                                    <option value="ND">North Dakota</option>
+                                    <option value="OH">Ohio</option>
+                                    <option value="OK">Oklahoma</option>
+                                    <option value="OR">Oregon</option>
+                                    <option value="PA">Pennsylvania</option>
+                                    <option value="RI">Rhode Island</option>
+                                    <option value="SC">South Carolina</option>
+                                    <option value="SD">South Dakota</option>
+                                    <option value="TN">Tennessee</option>
+                                    <option value="TX">Texas</option>
+                                    <option value="UT">Utah</option>
+                                    <option value="VT">Vermont</option>
+                                    <option value="VA">Virginia</option>
+                                    <option value="WA">Washington</option>
+                                    <option value="WV">West Virginia</option>
+                                    <option value="WI">Wisconsin</option>
+                                    <option value="WY">Wyoming</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="zipcode" required class="form-input" placeholder="ZIP code">
+                            </div>
+                        </div>
+
+                        <div
+                            style="margin-top:24px; margin-bottom: 24px; padding: 16px; background: rgba(255,100,100,0.1); border-left: 4px solid #ff4444; border-radius: 4px;">
+                            <p style="font-size: 0.85rem; color: #ffaaaa; line-height: 1.5;">
+                                <strong>IMPORTANT:</strong> Please be aware that if your address information is not
+                                correct, we cannot refund you. You will receive an email to confirm your address. Please
+                                carefully review it and press "Accept" or "Change". After you make these changes, you
+                                accept the no-refund policy terms.
+                            </p>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" id="pay-now-btn" class="checkout-btn">Pay now <span
+                                    id="btn-total-price"></span></button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <!-- Right Side: Order Summary -->
+        <aside class="checkout-sidebar">
+            <div class="sidebar-content">
+                <div id="checkout-items" class="checkout-items-list">
+                    <!-- JS INJECTED ITEMS -->
+                    <div style="text-align:center; padding: 40px; color: #666;">Loading order data...</div>
+                </div>
+
+                <div class="discount-code-section">
+                    <div class="form-group discount-group">
+                        <input type="text" class="form-input" placeholder="Discount code">
+                        <button class="apply-btn" disabled>Apply</button>
+                    </div>
+                </div>
+
+                <div class="summary-lines">
+                    <div class="summary-line">
+                        <span>Subtotal</span>
+                        <span id="summary-subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Shipping</span>
+                        <span id="summary-shipping">$0.00</span>
+                    </div>
+                    <div class="summary-line" id="tax-line" style="display:none;">
+                        <span id="tax-label">Estimated taxes</span>
+                        <span id="summary-tax">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="summary-total">
+                    <span class="total-label">Total</span>
+                    <span class="total-value"><span class="currency">USD</span> <span
+                            id="summary-total-final">$0.00</span></span>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="checkout.js"></script>
+    <script>
+        feather.replace();
+    </script>
+</body>
+
+</html>

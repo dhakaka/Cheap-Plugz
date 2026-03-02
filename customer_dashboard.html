@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Cheap Plugz</title>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="chatbot.css">
+    <link rel="stylesheet" href="countdown.css">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-container {
+            max-width: 800px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+            width: 100%;
+            flex: 1;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .auth-check {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-check h2 {
+            margin-bottom: 16px;
+        }
+
+        .auth-check p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+        }
+
+        .order-item {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+    </style>
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <button class="icon-button mobile-menu-btn" aria-label="Menu" onclick="window.location.href='/'">
+                <i data-feather="home"></i>
+            </button>
+            <a href="/" class="logo">
+                <img src="assets/logo.png" alt="Cheap Plugz Logo" class="logo-img">
+            </a>
+            <div class="header-icons" style="visibility: hidden;">
+                <!-- Hidden to keep flexbox centering balanced -->
+                <a href="#" class="icon-button" style="pointer-events: none;"><i data-feather="user"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <h1 id="welcome-message">Customer Dashboard</h1>
+
+        <!-- Auth Check State -->
+        <div id="auth-state" class="auth-check">
+            <h2>Sign In Required</h2>
+            <p>Please log in with the email you used to purchase to view your dashboard, order history, and balances.
+            </p>
+            <a href="login.html" class="btn-primary" style="text-decoration:none; display:inline-block;">Sign In</a>
+        </div>
+
+        <!-- Dashboard Content State -->
+        <div id="dashboard-content" style="display:none;" class="dashboard-grid">
+            <div class="card">
+                <h3>Order History</h3>
+                <div id="order-history-list">
+                    <!-- JS Injected Orders -->
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:24px;">
+                <div class="card">
+                    <h3>Account Summary</h3>
+                    <div class="info-row">
+                        <span class="info-label">Store Balance</span>
+                        <span style="color:#00ff00; font-weight:600;">$0.00</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Total Spent</span>
+                        <span id="total-spent" style="font-weight:600;">$0.00</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Status</span>
+                        <span style="color:#0055ff; font-weight:600;">Customer</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Profile Information</h3>
+                    <p id="profile-email" style="font-size:0.95rem; margin-bottom:16px;"></p>
+
+                    <div style="margin-bottom: 12px;">
+                        <label
+                            style="display:block; font-size:0.85rem; color:var(--text-secondary); margin-bottom:4px;">Phone
+                            Number</label>
+                        <input type="tel" id="profile-phone" placeholder="Enter phone number"
+                            style="width:100%; padding:8px; background:#000; border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; font-family:inherit; font-size:0.9rem;">
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label
+                            style="display:block; font-size:0.85rem; color:var(--text-secondary); margin-bottom:4px;">Shipping
+                            Address</label>
+                        <textarea id="profile-address" placeholder="Enter shipping address" rows="2"
+                            style="width:100%; padding:8px; background:#000; border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:4px; font-family:inherit; font-size:0.9rem; resize:vertical;"></textarea>
+                    </div>
+
+                    <button class="btn-primary" style="width:100%; margin-bottom:8px; padding:10px;"
+                        onclick="saveProfileInfo()">Save Changes</button>
+                    <button class="btn-secondary" style="width:100%; margin-top:16px;" onclick="logout()">Sign
+                        Out</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Area -->
+    <footer class="footer">
+        <div class="footer-container container">
+            <div class="footer-bottom">
+                <div class="legal-links">
+                    <a href="refund.html">Refund policy</a>
+                    <a href="privacy.html">Privacy policy</a>
+                    <a href="tos.html">Terms of service</a>
+                    <a href="contact.html">Contact information</a>
+                </div>
+                <p class="copyright">@ CHEAP PLUGZ ALL RIGHTS RESERVED</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        feather.replace();
+
+        // Very basic mock authentication using localStorage for demonstration.
+        // In a real app, this relies on session cookies/JWTs and a backend.
+        // For this demo, if the user "registers" or "logs in" via the main login.html, 
+        // they can set `current_customer_email` in localStorage.
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentEmail = localStorage.getItem('current_customer_email');
+
+            if (currentEmail) {
+                document.getElementById('auth-state').style.display = 'none';
+                document.getElementById('dashboard-content').style.display = 'grid';
+                document.getElementById('profile-email').innerText = currentEmail;
+
+                // Load existing profile info if any
+                let customers = localStorage.getItem('tonka_customers');
+                customers = customers ? JSON.parse(customers) : [];
+                const customerData = customers.find(c => c.email === currentEmail);
+                if (customerData) {
+                    if (customerData.phone) document.getElementById('profile-phone').value = customerData.phone;
+                    if (customerData.address) document.getElementById('profile-address').value = customerData.address;
+                }
+
+                loadCustomerOrders(currentEmail);
+            } else {
+                document.getElementById('auth-state').style.display = 'block';
+                document.getElementById('dashboard-content').style.display = 'none';
+            }
+        });
+
+        function saveProfileInfo() {
+            const currentEmail = localStorage.getItem('current_customer_email');
+            if (!currentEmail) return;
+
+            const phone = document.getElementById('profile-phone').value.trim();
+            const address = document.getElementById('profile-address').value.trim();
+
+            let customers = localStorage.getItem('tonka_customers');
+            customers = customers ? JSON.parse(customers) : [];
+            const index = customers.findIndex(c => c.email === currentEmail);
+
+            if (index !== -1) {
+                customers[index].phone = phone;
+                customers[index].address = address;
+                localStorage.setItem('tonka_customers', JSON.stringify(customers));
+                alert("Profile information updated successfully!");
+            } else {
+                alert("Unable to find customer account details.");
+            }
+        }
+
+        function loadCustomerOrders(email) {
+            let orders = localStorage.getItem('tonka_orders');
+            orders = orders ? JSON.parse(orders) : [];
+
+            const myOrders = orders.filter(o => o.customerEmail === email);
+            const listContainer = document.getElementById('order-history-list');
+            const spentContainer = document.getElementById('total-spent');
+
+            if (myOrders.length === 0) {
+                listContainer.innerHTML = '<p style="color:var(--text-secondary);">You have no previous orders.</p>';
+                return;
+            }
+
+            let totalSpent = 0;
+            let html = '';
+
+            myOrders.forEach(order => {
+                totalSpent += order.total;
+                const dateStr = new Date(order.date).toLocaleDateString();
+                const trackingHtml = order.trackingNumber ?
+                    `<div style="margin-top:12px; font-size:0.9rem; font-weight:600; color:#00ff00;">Tracking Number: ${order.trackingNumber}</div>` : '';
+
+                html += `
+                    <div class="order-item">
+                        <div class="order-header">
+                            <div>
+                                <span style="font-weight:600;">#${order.id}</span>
+                                <span style="color:var(--text-secondary); margin-left:8px;">${dateStr}</span>
+                            </div>
+                            <span class="status-badge">Fulfilled</span>
+                        </div>
+                        <div style="font-weight:600; font-size:1.1rem; margin-bottom:12px;">$${order.total.toFixed(2)}</div>
+                        <div style="font-size:0.9rem; color:var(--text-secondary);">
+                            ${order.items.map(i => `${i.quantity}x ${i.title} (${i.variant})`).join('<br>')}
+                        </div>
+                        ${trackingHtml}
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = html;
+            spentContainer.innerText = `$${totalSpent.toFixed(2)}`;
+        }
+
+        function logout() {
+            localStorage.removeItem('current_customer_email');
+            window.location.reload();
+        }
+    </script>
+    <script src="chatbot.js"></script>
+    <script src="countdown.js"></script>
+</body>
+
+</html>
