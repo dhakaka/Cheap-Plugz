@@ -32,22 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'DC': 0.0600
     };
 
-    // Pre-fill delivery form if user has saved data
-    if (activeUser.address) {
-        document.getElementById('address').value = activeUser.address;
-    }
-    if (activeUser.firstName) document.getElementById('firstName').value = activeUser.firstName;
-    if (activeUser.lastName) document.getElementById('lastName').value = activeUser.lastName;
-    if (activeUser.city) document.getElementById('city').value = activeUser.city;
-    if (activeUser.state) document.getElementById('state').value = activeUser.state;
-    if (activeUser.zipcode) document.getElementById('zipcode').value = activeUser.zipcode;
-
-    // Fallback split name if no explicit first/last name
-    if (activeUser.name && (!activeUser.firstName || !activeUser.lastName)) {
-        const nameParts = activeUser.name.split(' ');
-        document.getElementById('firstName').value = nameParts[0] || '';
-        document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
-    }
+    // Removed form pre-filling since the UI form has been bypassed
 
     // 2. Parse URL Parameters
     const urlParams = new URLSearchParams(window.location.search);
