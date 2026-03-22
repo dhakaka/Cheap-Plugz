@@ -1,11 +1,15 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Enforce Login State
+    // 1. Enforce Login State & Address
     const activeUserRaw = localStorage.getItem('tonka_active_user');
     if (!activeUserRaw) {
         window.location.href = 'login.html?requireAddress=true';
         return;
     }
     const activeUser = JSON.parse(activeUserRaw);
+    if (!activeUser.address || activeUser.address.trim() === '') {
+        window.location.href = 'login.html?requireAddress=true';
+        return;
+    }
 
     // Populate user email header if available
     const emailDisplay = document.getElementById('user-email-display');
@@ -141,119 +145,83 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('btn-total-price').innerText = `$${finalTotal.toFixed(2)}`;
 
 
-    // 6. Handle Checkout Submission
-    const checkoutForm = document.getElementById('checkout-form');
-    checkoutForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+    // 6. Execute Checkout Immediately (bypassing form UI)
+    document.body.innerHTML = `
+        <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; color: #fff; font-family: 'Inter', sans-serif;">
+            <h2 style="margin-bottom: 16px;">Processing Checkout...</h2>
+            <p style="color: #888;">Please wait while we redirect you to secure payment.</p>
+        </div>
+    `;
 
-        // At this point, they confirmed they want to pay.
-        // We simulate saving the "pending" order context if needed, but the core requirement
-        // is routing them to the variant-specific Stripe link now.
+    // Let's go to stripe or fallback to success
+    if (finalStripeUrl && finalStripeUrl.trim() !== '') {
+        window.location.href = finalStripeUrl;
+    } else {
+        let orders = localStorage.getItem('tonka_orders');
+        orders = orders ? JSON.parse(orders) : [];
+        const nextId = orders.length > 0 ? Math.max(...orders.map(o => parseInt(o.id) || 0), 1000) + 1 : 1001;
 
-        // Optionally, update the user profile with new address data if they changed it
-        activeUser.firstName = document.getElementById('firstName').value;
-        activeUser.lastName = document.getElementById('lastName').value;
-        activeUser.address = document.getElementById('address').value;
-        activeUser.city = document.getElementById('city').value;
-        activeUser.state = document.getElementById('state').value;
-        activeUser.zipcode = document.getElementById('zipcode').value;
-        localStorage.setItem('tonka_active_user', JSON.stringify(activeUser));
+        const newOrder = {
+            id: nextId.toString(),
+            customerEmail: activeUser.email,
+            customer: activeUser.email ? activeUser.email.split('@')[0] : 'Guest',
+            customerName: (activeUser.firstName || '') + ' ' + (activeUser.lastName || ''),
+            customerAddress: activeUser.address,
+            date: new Date().toISOString(),
+            total: finalTotal,
+            status: 'Paid',
+            fulfill: 'Pending',
+            items: quantity,
+            itemList: [{
+                title: product.title,
+                price: itemPrice,
+                quantity: quantity,
+                image: itemImage,
+                variant: selectedVariant ? selectedVariant.name : 'Standard',
+                size: selectedSize
+            }]
+        };
+        orders.unshift(newOrder);
+        localStorage.setItem('tonka_orders', JSON.stringify(orders));
 
-        // Let's go to stripe or fallback to success
-        if (finalStripeUrl && finalStripeUrl.trim() !== '') {
-            window.location.href = finalStripeUrl;
-        } else {
-            let orders = localStorage.getItem('tonka_orders');
-            orders = orders ? JSON.parse(orders) : [];
-            const nextId = orders.length > 0 ? Math.max(...orders.map(o => parseInt(o.id) || 0), 1000) + 1 : 1001;
-
-            const newOrder = {
-                id: nextId.toString(),
-                customerEmail: activeUser.email,
-                customer: activeUser.email ? activeUser.email.split('@')[0] : 'Guest',
-                customerName: (activeUser.firstName || '') + ' ' + (activeUser.lastName || ''),
-                customerAddress: activeUser.address,
-                date: new Date().toISOString(),
-                total: finalTotal,
-                status: 'Paid',
-                fulfill: 'Pending',
-                items: quantity,
-                itemList: [{
-                    title: product.title,
-                    price: itemPrice,
-                    quantity: quantity,
-                    image: itemImage,
-                    variant: selectedVariant ? selectedVariant.name : 'Standard',
-                    size: selectedSize
-                }]
-            };
-            orders.unshift(newOrder);
-            localStorage.setItem('tonka_orders', JSON.stringify(orders));
-
-            // Address Verification Mock Email
-            const emailHtml = `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
-                    <h2>Verify Your Delivery Address - Cheap Plugz</h2>
-                    <p>Thank you for your order! Before we ship, we need to verify your address information is correct. <b>If your address information is not correct, we cannot refund you.</b></p>
-                    <p>You have 24 hours to confirm or update this info before the link expires and your package is sealed.</p>
-                    
-                    <div style="background:#f4f4f4; padding:16px; margin: 16px 0; border-radius:8px;">
-                        <strong>Current Address on File:</strong><br>
-                        ${activeUser.firstName} ${activeUser.lastName}<br>
-                        ${activeUser.address}<br>
-                        ${activeUser.city}, ${activeUser.state} ${activeUser.zipcode}
-                    </div>
-
-                    <p>Please carefully review it and press "Accept" or "Change". After you make these changes, you accept the no-refund policy terms.</p>
-                    
-                    <a href="${window.location.origin}/customer_dashboard.html" style="background:#000; color:#fff; padding:12px 24px; text-decoration:none; font-weight:bold; border-radius:4px; display:inline-block; margin-right:8px;">Accept Address</a>
-                    <a href="${window.location.origin}/customer_dashboard.html#address" style="background:#f4f4f4; border:1px solid #ddd; color:#000; padding:12px 24px; text-decoration:none; font-weight:bold; border-radius:4px; display:inline-block;">Change Address</a>
+        // Address Verification Mock Email
+        const emailHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+                <h2>Verify Your Delivery Address - Cheap Plugz</h2>
+                <p>Thank you for your order! Before we ship, we need to verify your address information is correct. <b>If your address information is not correct, we cannot refund you.</b></p>
+                <p>You have 24 hours to confirm or update this info before the link expires and your package is sealed.</p>
+                
+                <div style="background:#f4f4f4; padding:16px; margin: 16px 0; border-radius:8px;">
+                    <strong>Current Address on File:</strong><br>
+                    ${activeUser.firstName || ''} ${activeUser.lastName || ''}<br>
+                    ${activeUser.address || ''}<br>
+                    ${activeUser.city || ''}, ${activeUser.state || ''} ${activeUser.zipcode || ''}
                 </div>
-            `;
 
-            if (typeof emailjs !== 'undefined') {
-                emailjs.send("service_nrvlrb7", "template_afw7f64", {
-                    to_email: activeUser.email,
-                    reply_to: "cheaplugz@gmail.com",
-                    subject: "ACTION REQUIRED: Verify Shipping Address",
-                    html_message: emailHtml
-                }).then(() => {
-                    alert('Order placed! An address verification email has been sent to ' + activeUser.email + '. Please accept it within 24 hours.');
-                    window.location.href = "index.html";
-                }).catch(err => {
-                    console.error("EmailJS Error: ", err);
-                    alert('Order placed successfully! Note: EmailJS is not configured so the verification email was not actually sent.');
-                    window.location.href = "index.html";
-                });
-            } else {
-                alert('Order placed! Please check your email to verify your address within 24 hours.');
+                <p>Please carefully review it and press "Accept" or "Change". After you make these changes, you accept the no-refund policy terms.</p>
+                
+                <a href="${window.location.origin}/customer_dashboard.html" style="background:#000; color:#fff; padding:12px 24px; text-decoration:none; font-weight:bold; border-radius:4px; display:inline-block; margin-right:8px;">Accept Address</a>
+                <a href="${window.location.origin}/customer_dashboard.html#address" style="background:#f4f4f4; border:1px solid #ddd; color:#000; padding:12px 24px; text-decoration:none; font-weight:bold; border-radius:4px; display:inline-block;">Change Address</a>
+            </div>
+        `;
+
+        if (typeof emailjs !== 'undefined') {
+            emailjs.send("service_nrvlrb7", "template_afw7f64", {
+                to_email: activeUser.email,
+                reply_to: "cheaplugz@gmail.com",
+                subject: "ACTION REQUIRED: Verify Shipping Address",
+                html_message: emailHtml
+            }).then(() => {
+                alert('Order placed! An address verification email has been sent to ' + activeUser.email + '. Please accept it within 24 hours.');
                 window.location.href = "index.html";
-            }
-        }
-    });
-
-    // Handle State change for dynamic Tax recalculations
-    const stateSelect = document.getElementById('state');
-    stateSelect.addEventListener('change', () => {
-        let newTaxRate = stateTaxRates[stateSelect.value] || 0;
-        let newTax = subtotal * newTaxRate;
-
-        const newTotal = subtotal + shipping + newTax;
-
-        if (newTax > 0) {
-            taxLine.style.display = 'flex';
-            taxLabel.innerText = `Estimated taxes (${(newTaxRate * 100).toFixed(2)}%)`;
-            document.getElementById('summary-tax').innerText = `$${newTax.toFixed(2)}`;
+            }).catch(err => {
+                console.error("EmailJS Error: ", err);
+                alert('Order placed successfully! Note: EmailJS is not configured so the verification email was not actually sent.');
+                window.location.href = "index.html";
+            });
         } else {
-            taxLine.style.display = 'none';
+            alert('Order placed! Please check your email to verify your address within 24 hours.');
+            window.location.href = "index.html";
         }
-
-        document.getElementById('summary-total-final').innerText = newTotal.toFixed(2);
-        document.getElementById('btn-total-price').innerText = `$${newTotal.toFixed(2)}`;
-    });
-
-    // Trigger initial state change to ensure correct tax rendering if TX is pre-filled
-    if (stateSelect.value) {
-        stateSelect.dispatchEvent(new Event('change'));
     }
 });
